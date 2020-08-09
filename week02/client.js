@@ -17,12 +17,12 @@ class Request{
         else if(this.headers['Content-Type'] === 'application/x-www-form-urlencoded')
             this.bodyText = Object.keys(this.body).map(key => `${key}=${encodeURIComponent(this.body[key])}`).join('&');
         
-        this.headers["contentLength"] = this.bodyText.length;
+        this.headers["Content-Length"] = this.bodyText.length;
     }
 
     send(connection){
         return new Promise((resolve, reject) => {
-            const parser = new responseParser;
+            const parser = new ResponseParser;
             // resolve("")
             if(connection){
                 connection.write(this.toString());
@@ -51,15 +51,18 @@ class Request{
         })
     }
 
+    // toString(){
+    //     return `${this.method} ${this.path} HTTP/1.1\r
+    //     ${Object.keys(this.headers).map(key => `${key}=${this.headers[key]}`).join('\r\n')}\r
+    //     \r
+    //     ${this.bodyText}`
+    // }
     toString(){
-        return `${this.method} ${this.path} HTTP/1.1\r
-        ${Object.keys(this.headers).map(key => `${key}=${this.headers[key]}`).join('\r\n')}\r
-        \r
-        ${this.bodyText}`
+        return `${this.method} ${this.path} HTTP/1.1\r\n${Object.keys(this.headers).map(key => `${key}: ${this.headers[key]}`).join('\r\n')}\r\n\r\n${this.bodyText}\r\n`;
     }
 }
 
-class responseParser{ //?????
+class ResponseParser{ //?????
     constructor(){
         this.WAITING_STATUS_LINE = 0;
         this.WAITING_STATUS_LINE_END = 1;
@@ -100,7 +103,7 @@ class responseParser{ //?????
                 this.status = this.WAITING_HEADER_SPACE;
             else if(c === '\r'){
                 this.status = this.WAITING_HEADER_BLOCK_END;
-                if(this.header['Transfer-Encoding'] === 'chuncked')
+                if(this.headers['Transfer-Encoding'] === 'chuncked')
                     this.bodyParser = new ChunckedBodyParser();
             }
             else
