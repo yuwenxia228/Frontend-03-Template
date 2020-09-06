@@ -1,1 +1,14 @@
-学习笔记
+学习笔记<br>
+1、正常流的排布:从上到下，从左到右<br>
+2、Bfc:块级格式化上下文<br>
+Ifc:行级格式化上下文<br>
+Block-container:里面可以放正常流的盒(display不是特殊属性值的盒，display:flex就不是block-container,里面的flex-item是)<br>
+Block-level-box外面可以放bfc,可以被放进block-container<br>
+3、行级排布：行内盒基线对齐，top和bottom会被文字内容撑开<br>
+4、块级排布：块级盒在正常流的基础上向左或向右浮动，受影响的范围是float所占据的所有空间<br>
+浮动清除：找到一块干净的空间执行浮动操作<br>
+margin折叠只发生在同一个bfc<br>
+block-box并且overflow:visible就会发生bfc合并<br>
+bfc合并：如果没有创建bfc只有行盒受影响。如果没有创建bfc，会发生边距折叠，创建了新的bfc发生同向边距折叠<br>
+5、animation的用法：设置关键帧(from、to)和时间函数与贝塞尔曲线<br>
+6、颜色:cmyk(印刷行业、补色三原色)与rgb与hsl(色相饱和度明度)与hsv
