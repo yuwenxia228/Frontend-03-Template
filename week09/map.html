@@ -1,0 +1,61 @@
+<style>
+    .cell{
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        line-height: 6px;
+        background-color: gray;
+        border-bottom: 1px solid white;
+        border-right: 1px solid white;
+        vertical-align: middle;
+    }
+
+    #container{
+        width: 701px;
+    }
+</style>
+
+<div id="container"></div>
+
+<script>
+    let map = Array(10000).filter(0);
+    let container = document.getElementById('container');
+
+    for(let x = 0; x < 100; x++){
+        for(let y = 0; y < 100; y++){
+            let cell = document.createElement('div');
+            cell.classList.add('cell');
+            if(map[100 * x + y] === 1){
+                cell.style.backgroundColor = 'black';
+            }
+
+            cell.addEventListener('mousemove', () => {
+                if(mousedown){
+                    if(clear){
+                        cell.style.backgroundColor = '';
+                        map[100*x+y] = 0;
+                    }else{
+                        cell.style.backgroundColor = 'black';
+                        map[100*x+y] = 1;
+                    }
+                }
+            })
+
+            container.appendChild('cell');
+        }
+    }
+
+    //广度优先寻路算法
+
+
+
+    let mousedown = false;
+    let clear = false;
+    document.addEventListener('mousedown', () => {
+        mousedown = true;
+        clear = (e.which === 3)//右键
+    })
+    document.addEventListener('mouseup', () => mousedown = false);
+    document.addEventListener('contextmenu', e => e.preventDefault());//阻止右键菜单事件
+
+</script>
