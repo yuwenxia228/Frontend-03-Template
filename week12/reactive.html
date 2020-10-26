@@ -1,0 +1,75 @@
+<html>
+    <script>
+        let object = {
+            a: {c: 3},
+            b: 2
+        }
+
+        let usedReactivities = [];//依赖收集数组
+        // let dep = new Map();
+        let reactivities = new Map();
+        let proxy = reactive(object);
+
+        let callbacks = new Map();
+        function effect(callback){
+            // callbacks.push(callback);
+            usedReactivities = [];//清空，为什么清空？
+            callback();
+            //注册副作用函数
+            for(let reactivity of usedReactivities){
+                if(!callbacks.has(reactivity[0])){
+                    callbacks.set(reactivity[0], new Map());
+                }
+                if(!callbacks.get(reactivity[0]).has(reactivity[1])){
+                    callbacks.get(reactivity[0]).set(reactivity[1], []);
+                }
+                callbacks.get(reactivity[0]).get(reactivity[1]).push(callback);
+            }
+        }
+
+        effect(() => {
+            console.log(proxy.a.c);
+        })
+
+        function reactive(object){
+            if(reactivities.has(object))
+                return reactivities.get(object);
+            
+            let proxy = new Proxy(object, {
+                set: function(obj, prop, val){
+                    obj[prop] = val;
+                    // console.log(obj, prop);
+                    //执行副作用函数
+                    if(callbacks.has(obj)){
+                        if(callbacks.get(obj).has(prop)){
+                            for(let callback of callbacks.get(obj).get(prop)){
+                                callback();
+                            }
+                        }
+                    }
+                    return obj[prop];
+                },
+                get: function(obj, prop, val){
+                    // console.log(obj[prop]);
+                    //依赖收集
+                    // if(!dep.has(obj)){
+                    //     dep.set(obj, new Map());
+                    // }
+                    // if(!dep.get(obj).has(prop)){
+                    //     dep.get(obj).set(prop, []);
+                    // }
+                    // dep.get(obj).get(prop)如何把副作用函数和prop一一对应起来
+                    usedReactivities.push([obj, prop]);
+                    if(typeof obj[prop] === "object"){
+                        return reactive(obj[prop]);
+                    }
+                    // console.log(usedReactivities);
+                    return obj[prop];
+                }
+            })
+
+            reactivities.set(object, proxy);
+            return proxy;
+        }
+    </script>
+</html>
