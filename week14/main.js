@@ -1,6 +1,6 @@
 import { Component, createElement } from './framework.js'
 import { Carousel } from './carousel.js'
-import { TimeLine, Animation } from './animation'
+import { TimeLine, Animation } from './animation.js'
 
 
 let d = [
