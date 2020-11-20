@@ -9,13 +9,24 @@ export function createElement(type, attributes, ...children){
     for(let name in attributes){
         element.setAttribute(name, attributes[name]);
     }
-    for(let child of children){
-        if(typeof child === 'string'){
-            child = new TextWrapper(child);
+
+    let processChildren = (children) => {
+        for(let child of children){
+            if((typeof child === "object") && (child instanceof Array))
+            {
+                processChildren(child); //如果child是一个数组的话，递归调用processChildren
+                continue;
+            }
+
+            if(typeof child === 'string'){
+                child = new TextWrapper(child);
+            }
+            element.appendChild(child);
+            // child.mountTo(element);
         }
-        element.appendChild(child);
-        // child.mountTo(element);
     }
+    processChildren(children);
+    
     return element;
 }
 
@@ -44,16 +55,25 @@ export class Component{
         this[ATTRIBUTE]["on" + type.replace(/^[\s\S]/, s => s.toUpperCase())/*正则替换首字母大写*/](new CustomEvent(type, {detail: args}));
 
     }
+    render(){
+        return this.root;
+    }
 }
 
 class ElementWrapper extends Component {//正常的element是没有mountTo方法，为了统一，设置一个新的类
     constructor(type) {
+        super();
         this.root = document.createElement(type);
+    }
+
+    setAttribute(name, value){
+        this.root.setAttribute(name,value);
     }
 }
 
 class TextWrapper extends Component {
     constructor(content) {
+        super();
         this.root = document.createTextNode(content);
     }
 }
