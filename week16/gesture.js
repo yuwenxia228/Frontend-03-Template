@@ -194,7 +194,7 @@ export class Recognizer{
 
         if(context.isPress){
             // console.log("pressend");
-            this.dispatcher.dispatch("presEnd", {})
+            this.dispatcher.dispatch("pressEnd", {})
         }
     
         context.points = context.points.filter(point => Date.now() - point.t < 500); 
@@ -206,7 +206,7 @@ export class Recognizer{
             d = Math.sqrt((point.clientX - context.points[0].x) ** 2 + (point.clientY - context.points[0].y) ** 2);
             v = d / (Date.now() - context.points[0].t);
         }
-        console.log(v);
+        // console.log(v);
     
         if(v > 1.5){
             // console.log("flick");
@@ -230,9 +230,20 @@ export class Recognizer{
                 clientX: point.clientX,
                 clientY: point.clientY,
                 isVertical: context.isVertical,
-                isFlick: context.isFlick
+                isFlick: context.isFlick,
+                velocity: v
             })
         }
+
+        this.dispatcher.dispatch("end", {
+            startX: context.startX,
+            startY: context.startY,
+            clientX: point.clientX,
+            clientY: point.clientY,
+            isVertical: context.isVertical,
+            isFlick: context.isFlick,
+            velocity: v
+        })
     }
     
     cancel(point, changedTouches) {
